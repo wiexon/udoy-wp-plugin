@@ -51,6 +51,9 @@ and abandoned checkout data to the Udoy service, plus a periodic health check (p
 queue size). Nothing is sent before you connect. Logs written by the plugin (WooCommerce → Status → Logs,
 source `udoy`) contain order ids and HTTP status codes only.
 
+Udoy's [Terms of Service](https://udoy.app/terms), [Privacy Policy](https://udoy.app/privacy) and
+[data deletion](https://udoy.app/data-deletion) page apply to the data you send.
+
 ## Development
 
 The plugin source lives in [`src/`](src). The production API address,

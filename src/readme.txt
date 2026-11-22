@@ -20,6 +20,8 @@ Sync buttons, mapping and settings live in Udoy, not in WordPress.
 
 This plugin sends order data (customer name, phone, email, address, items, payment details) and abandoned checkout data to the Udoy service at https://api.udoy.app once you connect with your Udoy plugin key. It also sends a periodic health check (plugin and WooCommerce versions, queue size). Nothing is sent before you connect.
 
+This service is provided by Udoy: [Terms of Service](https://udoy.app/terms), [Privacy Policy](https://udoy.app/privacy), [Data deletion](https://udoy.app/data-deletion).
+
 == Installation ==
 
 1. Upload the plugin and activate it. WooCommerce must be active.
