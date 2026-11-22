@@ -3,7 +3,7 @@
  * Plugin Name:       Udoy Connect
  * Plugin URI:        https://udoy.app
  * Description:       Connects your WooCommerce store to Udoy: pushes orders and abandoned checkouts, and gives Udoy REST access for stock and status sync.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            Udoy
@@ -20,7 +20,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'UDOY_VERSION', '1.0.0' );
+define( 'UDOY_VERSION', '1.0.1' );
 define( 'UDOY_FILE', __FILE__ );
 define( 'UDOY_DIR', plugin_dir_path( __FILE__ ) );
 

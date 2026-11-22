@@ -1,10 +1,10 @@
 === Udoy Connect ===
-Contributors: udoy
+Contributors: myudoy
 Tags: woocommerce, orders, sync, abandoned checkout, bangladesh
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -29,6 +29,9 @@ This service is provided by Udoy: [Terms of Service](https://udoy.app/terms), [P
 3. Paste the plugin key from your WooCommerce channel in Udoy and click Connect.
 
 == Changelog ==
+
+= 1.0.1 =
+* Update the WordPress.org contributor username.
 
 = 1.0.0 =
 * First release.
