@@ -94,4 +94,8 @@ The licence covers this source code. It does not grant any right to use the Udoy
 
 ## Security
 
-To report a vulnerability, see [SECURITY.md](SECURITY.md).
+To report a vulnerability, see [SECURITY.md](SECURITY.md) or email support@udoy.app.
+
+## Support
+
+For help with the plugin or your Udoy connection, email support@udoy.app.
