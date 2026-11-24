@@ -65,7 +65,7 @@ define( 'UDOY_API_BASE', 'https://your-test-server.example' );
 ```
 
 or use the `udoy_api_base` filter. All control calls go to `{base}/api/plugin/v1/<action>`; pushes go to the
-`intakeUrl` that the connect call returns.
+`intakeUrl` that the connect call returns. The `intakeUrl` must be on the same host as the API base, or Connect fails.
 
 Filters:
 

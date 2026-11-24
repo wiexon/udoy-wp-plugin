@@ -82,6 +82,19 @@ class Udoy_Abandoned {
 		add_action( 'udoy_push_abandoned', array( __CLASS__, 'push' ), 10, 1 );
 	}
 
+	/** Names of the fields registered on the checkout form (including custom fields added by other plugins). */
+	private static function checkout_field_keys() {
+		$keys = self::KNOWN_FIELDS;
+		if ( function_exists( 'WC' ) && WC()->checkout() ) {
+			foreach ( (array) WC()->checkout()->get_checkout_fields() as $group ) {
+				if ( is_array( $group ) ) {
+					$keys = array_merge( $keys, array_keys( $group ) );
+				}
+			}
+		}
+		return array_unique( $keys );
+	}
+
 	private static function enabled() {
 		return Udoy_Options::is_active() && false !== Udoy_Options::remote_setting( 'pushAbandoned', true );
 	}
@@ -92,7 +105,9 @@ class Udoy_Abandoned {
 		}
 		$fields = array();
 		parse_str( (string) $post_data, $fields );
-		self::$pending_fields = is_array( $fields ) ? wc_clean( wp_unslash( $fields ) ) : array();
+		// Keep only fields the checkout form actually registers, never everything that was posted.
+		$fields               = is_array( $fields ) ? array_intersect_key( $fields, array_flip( self::checkout_field_keys() ) ) : array();
+		self::$pending_fields = wc_clean( wp_unslash( $fields ) );
 		add_action( 'shutdown', array( __CLASS__, 'save_pending' ) );
 	}
 

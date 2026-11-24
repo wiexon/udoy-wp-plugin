@@ -25,7 +25,7 @@ class Udoy_Connect {
 			$wpdb->prefix . 'woocommerce_api_keys',
 			array(
 				'user_id'         => get_current_user_id(),
-				'description'     => 'udoy',
+				'description'     => 'Udoy Connect',
 				'permissions'     => 'read_write',
 				'consumer_key'    => wc_api_hash( $consumer_key ),
 				'consumer_secret' => $consumer_secret,
@@ -127,7 +127,9 @@ class Udoy_Connect {
 		}
 
 		$intake = isset( $result['body']['intakeUrl'] ) ? esc_url_raw( (string) $result['body']['intakeUrl'] ) : '';
-		if ( '' === $intake || ! Udoy_Options::is_allowed_url( $intake ) || empty( $result['body']['channelId'] ) ) {
+		// Pushes may only go to the same host as the Udoy API, so data never leaves for another server.
+		$same_host = strtolower( (string) wp_parse_url( $intake, PHP_URL_HOST ) ) === strtolower( (string) wp_parse_url( Udoy_Options::api_base(), PHP_URL_HOST ) );
+		if ( '' === $intake || ! $same_host || ! Udoy_Options::is_allowed_url( $intake ) || empty( $result['body']['channelId'] ) ) {
 			return $fail( __( 'Udoy sent an unexpected answer. Please contact Udoy support.', 'udoy-connect' ) );
 		}
 

@@ -1,6 +1,6 @@
 {
   "name": "udoy-wp-plugin",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "description": "Build tooling for the Udoy Connect plugin",
   "license": "GPL-2.0-or-later",

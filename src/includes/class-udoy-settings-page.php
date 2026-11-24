@@ -69,6 +69,9 @@ class Udoy_Settings_Page extends WC_Settings_Page {
 			</tr>
 			<?php endif; ?>
 		</table>
+		<p class="description">
+			<?php esc_html_e( 'Connecting creates a WooCommerce REST API key with read/write access and sends it to Udoy, so Udoy can sync stock and order status. After you connect, new and changed orders and abandoned checkouts are sent to Udoy. Disconnect deletes the key.', 'udoy-connect' ); ?>
+		</p>
 		<p class="submit"><button type="submit" name="udoy_connect" value="1" class="button button-primary"><?php esc_html_e( 'Connect', 'udoy-connect' ); ?></button></p>
 		<?php
 	}
@@ -88,7 +91,7 @@ class Udoy_Settings_Page extends WC_Settings_Page {
 		?>
 		<table class="form-table">
 			<tr><th scope="row"><?php esc_html_e( 'Status', 'udoy-connect' ); ?></th>
-				<td><strong style="color:<?php echo $active ? '#008a20' : '#d63638'; ?>;">
+				<td><strong style="color:<?php echo esc_attr( $active ? '#008a20' : '#d63638' ); ?>;">
 					<?php echo $active ? esc_html__( 'Connected', 'udoy-connect' ) : esc_html__( 'Disconnected', 'udoy-connect' ); ?>
 				</strong></td></tr>
 			<?php if ( 'https://api.udoy.app' !== $base ) : ?>
@@ -114,8 +117,7 @@ class Udoy_Settings_Page extends WC_Settings_Page {
 				<td><?php echo '' !== $last_error ? esc_html( $last_error ) : esc_html( $never ); ?></td></tr>
 		</table>
 		<p>
-			<a class="button" href="<?php echo esc_url( wp_nonce_url( Udoy_Admin::settings_url( array( 'udoy_action' => 'disconnect' ) ), 'udoy_disconnect' ) ); ?>"
-				onclick="return confirm('<?php echo esc_js( __( 'Disconnect this store from Udoy?', 'udoy-connect' ) ); ?>');"><?php esc_html_e( 'Disconnect', 'udoy-connect' ); ?></a>
+			<a class="button udoy-disconnect" href="<?php echo esc_url( wp_nonce_url( Udoy_Admin::settings_url( array( 'udoy_action' => 'disconnect' ) ), 'udoy_disconnect' ) ); ?>"><?php esc_html_e( 'Disconnect', 'udoy-connect' ); ?></a>
 		</p>
 		<?php
 	}

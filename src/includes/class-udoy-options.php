@@ -80,22 +80,30 @@ class Udoy_Options {
 		return hash( 'sha256', wp_salt( 'auth' ), true );
 	}
 
+	/** Whether a stored value is the hex string set_plugin_key() writes. */
+	private static function is_hex( $value ) {
+		return is_string( $value ) && '' !== $value && 0 === strlen( $value ) % 2 && 1 === preg_match( '/^[0-9a-f]+$/i', $value );
+	}
+
 	public static function set_plugin_key( $plain ) {
+		if ( ! function_exists( 'openssl_encrypt' ) ) {
+			return false;
+		}
 		$iv     = random_bytes( 16 );
 		$cipher = openssl_encrypt( $plain, 'aes-256-cbc', self::crypt_key(), OPENSSL_RAW_DATA, $iv );
 		if ( false === $cipher ) {
 			return false;
 		}
-		self::set( 'plugin_key', base64_encode( $iv . $cipher ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+		self::set( 'plugin_key', bin2hex( $iv . $cipher ) );
 		return true;
 	}
 
 	public static function plugin_key() {
 		$stored = (string) self::get( 'plugin_key', '' );
-		if ( '' === $stored ) {
+		if ( ! self::is_hex( $stored ) || ! function_exists( 'openssl_decrypt' ) ) {
 			return '';
 		}
-		$raw = base64_decode( $stored, true ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
+		$raw = hex2bin( $stored );
 		if ( false === $raw || strlen( $raw ) < 17 ) {
 			return '';
 		}

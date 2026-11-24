@@ -18,8 +18,8 @@ $udoy_base = defined( 'UDOY_API_BASE' ) ? (string) UDOY_API_BASE : 'https://api.
 $udoy_base = (string) apply_filters( 'udoy_api_base', $udoy_base );
 
 if ( '' !== $udoy_stored && '' !== $udoy_intake ) {
-	$udoy_raw = base64_decode( $udoy_stored, true ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
-	if ( false !== $udoy_raw && strlen( $udoy_raw ) > 16 ) {
+	$udoy_raw = ( 0 === strlen( $udoy_stored ) % 2 && 1 === preg_match( '/^[0-9a-f]+$/i', $udoy_stored ) ) ? hex2bin( $udoy_stored ) : false;
+	if ( false !== $udoy_raw && strlen( $udoy_raw ) > 16 && function_exists( 'openssl_decrypt' ) ) {
 		$udoy_plain = openssl_decrypt( substr( $udoy_raw, 16 ), 'aes-256-cbc', hash( 'sha256', wp_salt( 'auth' ), true ), OPENSSL_RAW_DATA, substr( $udoy_raw, 0, 16 ) );
 		if ( false !== $udoy_plain && '' !== $udoy_plain ) {
 			wp_remote_post(
@@ -43,10 +43,18 @@ if ( function_exists( 'as_unschedule_all_actions' ) ) {
 }
 
 // Options and transients.
-$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE 'udoy\\_%' OR option_name LIKE '\\_transient\\_udoy\\_%' OR option_name LIKE '\\_transient\\_timeout\\_udoy\\_%'" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+// Uninstall cleanup by prefix: WordPress has no API for deleting options or meta by pattern.
+$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+	$wpdb->prepare(
+		"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s OR option_name LIKE %s",
+		$wpdb->esc_like( 'udoy_' ) . '%',
+		$wpdb->esc_like( '_transient_udoy_' ) . '%',
+		$wpdb->esc_like( '_transient_timeout_udoy_' ) . '%'
+	)
+);
 
 // Order meta (legacy posts storage and HPOS).
-$wpdb->query( "DELETE FROM {$wpdb->postmeta} WHERE meta_key LIKE '\\_udoy\\_%'" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->prefix . 'wc_orders_meta' ) ) === $wpdb->prefix . 'wc_orders_meta' ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-	$wpdb->query( "DELETE FROM {$wpdb->prefix}wc_orders_meta WHERE meta_key LIKE '\\_udoy\\_%'" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->postmeta} WHERE meta_key LIKE %s", $wpdb->esc_like( '_udoy_' ) . '%' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->prefix . 'wc_orders_meta' ) ) === $wpdb->prefix . 'wc_orders_meta' ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+	$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}wc_orders_meta WHERE meta_key LIKE %s", $wpdb->esc_like( '_udoy_' ) . '%' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 }

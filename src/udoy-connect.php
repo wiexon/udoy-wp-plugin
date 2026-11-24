@@ -3,7 +3,7 @@
  * Plugin Name:       Udoy Connect
  * Plugin URI:        https://udoy.app
  * Description:       Connects your WooCommerce store to Udoy: pushes orders and abandoned checkouts, and gives Udoy REST access for stock and status sync.
- * Version:           1.0.1
+ * Version:           1.0.2
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            Udoy
@@ -20,7 +20,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'UDOY_VERSION', '1.0.1' );
+define( 'UDOY_VERSION', '1.0.2' );
 define( 'UDOY_FILE', __FILE__ );
 define( 'UDOY_DIR', plugin_dir_path( __FILE__ ) );
 
@@ -34,6 +34,8 @@ add_action(
 	function () {
 		if ( class_exists( '\Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
 			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', UDOY_FILE, true );
+			// Works with the Cart and Checkout blocks (Store API hooks in Udoy_Abandoned and Udoy_Orders).
+			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'cart_checkout_blocks', UDOY_FILE, true );
 		}
 	}
 );
@@ -59,8 +61,10 @@ function udoy_boot() {
 		add_action(
 			'admin_notices',
 			function () {
-				if ( current_user_can( 'activate_plugins' ) ) {
-					echo '<div class="notice notice-error"><p>' . esc_html__( 'Udoy Connect needs WooCommerce to be installed and active.', 'udoy-connect' ) . '</p></div>';
+				$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+				// Only on the Plugins screen, not on every admin page.
+				if ( $screen && 'plugins' === $screen->id && current_user_can( 'activate_plugins' ) ) {
+					echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__( 'Udoy Connect needs WooCommerce to be installed and active.', 'udoy-connect' ) . '</p></div>';
 				}
 			}
 		);
